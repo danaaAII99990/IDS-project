@@ -1,0 +1,20 @@
+
+
+drop tcp any any -> any any (msg:"SQL Injection Attempt"; content:"SELECT";  pcre:"/UNION.*SELECT/i";
+sid:10000031;)
+
+
+alert http any any -> any any (msg:"SQL Injection Attempt";  content:"/index.php?id=1"; sid:1000001;)
+
+alert http any any -> any any (msg:"Possible SQL Injection Attempt";  content:"GET"; http_method; content:"php?"; http_uri; pcre:"/\?[^0-9a-zA-Z]*[1-9][^0-9a-zA-Z]*=[^0-9a-zA-Z%]*%[23].*UNION%20ALL%20SELECT/i"; sid:1000002;)
+
+drop tcp any any -> any $HTTP_PORTS (msg:"SQL Injection Attempt"; content:"SELECT";  pcre:"/UNION.*SELECT/i"; sid:10000033;)
+
+
+drop tcp any any -> any any (msg:"Possible SYN Flooding Attack Detected"; flags:S; detection_filter: track by_src, count 20, seconds 10; sid:1000003;)
+
+drop tcp any any -> any any (msg:"Repeating 'A' pattern detected"; content:"|41 41 41 41|"; detection_filter: track by_src, count 5, seconds 60; sid:10000022;)
+
+
+drop icmp any any -> any any (msg:"ICMP test detected";  sid:100000011; rev:001; classtype:icmp-event;)
+

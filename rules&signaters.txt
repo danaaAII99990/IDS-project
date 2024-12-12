@@ -1,0 +1,38 @@
+\\rule to drop packets associated with SYN flood attack
+sudo iptables -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 5 -j ACCEPT
+sudo iptables -A INPUT -p tcp --syn -j DROP
+
+\\Limit rate of incoming TCP SYN packets on port 80
+sudo ufw limit 80/tcp
+
+sudo ufw allow from 192.168.1.187 to any port 3306
+
+
+
+\\signature for buffer overflow attack
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" "GET / HTTP/1.1" 200 11173 "-" "-"
+
+
+\\signature for sql injection attack
+"GET /index.php?name=1%27%20ORDER%20BY%202292--%20AKpM HTTP/1.1" 200 3440 "-" "sqlmap/1.7.2#stable 
+
+ 
+
+
+\\signature for syn flood
+[Flag:SYN,Connection establish request (SYN): server port 80,Count 15000]
+      
+
+//snort rule
+drop tcp any any -> any $HTTP_PORTS (msg:"SQL Injection Attempt"; content:"SELECT";  pcre:"/UNION.*SELECT/i"; sid:10000033;)
+
+
+drop tcp any any -> any any (msg:"Possible SYN Flooding Attack Detected"; flags:S; detection_filter: track by_src, count 20, seconds 10; sid:1000003;)
+
+drop tcp any any -> any any (msg:"Repeating 'A' pattern detected"; content:"|41 41 41 41|"; detection_filter: track by_src, count 5, seconds 60; sid:10000022;)
+
+
+
+Dana Abu Shaweesh
+Leen Falah
+Hala Nijem
