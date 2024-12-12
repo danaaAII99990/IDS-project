@@ -1,2 +1,6 @@
-ZEEK: anomaly-based and signature-based IDS.
-Create an attacks without write any signature for it and check how the anomaly work
+IDS projects :
+
+
+
+the main branch has ZEEK project documentation.
+The snort branch has a snort project file.
